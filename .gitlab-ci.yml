@@ -32,5 +32,6 @@ build:
   stage: build
   script:
     - echo "Build & Test Here!"
+    - echo "WOOOO!"
   except: 
     - trigger
