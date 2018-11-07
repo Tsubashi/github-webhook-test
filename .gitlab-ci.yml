@@ -11,7 +11,7 @@ mirror:
   image: centos:7
   script:
     - echo "Mirroring from ${GITHUB_REPO_URL}"
-    - yum update && yum install ssh-agent -y
+    - yum update && yum -y install ssh-agent
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${MIRROR_KEY}")    
     - if [ -e github ]; then rm -rf github; fi
