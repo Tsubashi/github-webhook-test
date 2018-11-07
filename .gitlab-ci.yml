@@ -3,16 +3,18 @@ stages:
   - build
 
 variables:
-  - GITHUB_REPO_URL: "https://github.com/tsubashi/github-webook-test.git"
+  GITHUB_REPO_URL: "https://github.com/tsubashi/github-webook-test.git"
 
 mirror:
   stage: mirror
   script:
     - echo "Mirroring from ${GITHUB_REPO_URL}"
-  only: triggers
+  only: 
+    - triggers
 
 build:
   stage: build
   script:
     - echo "Build & Test Here!"
-  except: triggers
+  except: 
+    - trigger
