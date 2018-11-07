@@ -11,7 +11,7 @@ mirror:
   image: centos:7
   script:
     # Set up SSH
-    - yum -y install openssh-clients git
+    - yum -y install openssh-clients git curl
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${MIRROR_KEY}")   
     - mkdir -p ~/.ssh
