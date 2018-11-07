@@ -3,7 +3,7 @@ stages:
   - build
 
 variables:
-  - GITHUB_REPO_URL = "https://github.com/tsubashi/github-webook-test.git"
+  - GITHUB_REPO_URL: "https://github.com/tsubashi/github-webook-test.git"
 
 mirror:
   stage: mirror
