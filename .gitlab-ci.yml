@@ -11,7 +11,7 @@ mirror:
   image: centos:7
   script:
     # Set up SSH
-    - yum -y install openssh-clients git curl
+    - yum -y install openssh-clients git
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${MIRROR_KEY}")   
     - mkdir -p ~/.ssh
@@ -30,9 +30,10 @@ mirror:
 
 build:
   stage: build
+  image: centos:7
   script:
     - echo "Build & Test Here!"
-    - echo "WOOOO!"
+    - yum -y install curl
     - curl -X POST -H "Content-Type:application/json" -H "Authorization:token ${GITHUB_TOKEN}" https://github.com/repos/tsubashi/github-webhook-test/statuses/${CI_COMMIT_SHA} --data '{"state":"success", "target_url":"${CI_JOB_URL}", "description":"The build succeeded!", "context":"continuous-integration/gitlab-ci"}'
   except: 
     - trigger
