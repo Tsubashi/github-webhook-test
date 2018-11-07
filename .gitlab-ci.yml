@@ -4,11 +4,20 @@ stages:
 
 variables:
   GITHUB_REPO_URL: "https://github.com/tsubashi/github-webook-test.git"
+  GITLAB_REPO_URL: "git@git.aquaveo.com:cscott/github-webhook-test.git"
 
 mirror:
   stage: mirror
   script:
     - echo "Mirroring from ${GITHUB_REPO_URL}"
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "${MIRROR_KEY}")    
+    - if [ -e github ]; then rm -rf github; fi
+    - git clone --bare ${GITHUB_REPO_URL} github
+    - cd github
+    - git push --mirror ${GITLAB_REPO_URL}
+    - cd ..
+    - rm -rf github
   only: 
     - triggers
 
