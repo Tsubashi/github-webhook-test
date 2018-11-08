@@ -34,6 +34,6 @@ build:
   script:
     - echo "Build & Test Here!"
     - yum -y install curl
-    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token ${GITHUB_TOKEN}" https://github.com/repos/tsubashi/github-webhook-test/statuses/${CI_COMMIT_SHA} --data '{"state":"success", "target_url":"${CI_JOB_URL}", "description":"The build succeeded!", "context":"continuous-integration/gitlab-ci"}'
+    - echo curl -X POST -H "Content-Type:application/json" -H "Authorization:token ${GITHUB_TOKEN}" https://github.com/repos/tsubashi/github-webhook-test/statuses/${CI_COMMIT_SHA} --data '{"state":"success", "target_url":"${CI_JOB_URL}", "description":"The build succeeded!", "context":"continuous-integration/gitlab-ci"}'
   except: 
     - trigger
