@@ -1,41 +1,40 @@
 stages:
-  - mirror
-  - build
+  - Build
+  - "Set Final GitHub Status"
+  
 
 variables:
+  GITHUB_ORG: "cscott"
+  GITHUB_REPO_NAME: "github-webhook-test"
   GITHUB_REPO_URL: "git@github.com:tsubashi/github-webhook-test.git"
-  GITLAB_REPO_URL: "git@git.aquaveo.com:cscott/github-webhook-test.git"
+  GITLAB_REPO_URL: "git@git.aquaveo.com:${GITHUB_ORG}/${GITHUB_REPO_NAME}.git"
+  
 
-mirror:
-  stage: mirror
-  image: centos:7
+"Set Pending Status (GitHub)":
+  stage: Build
+  image: curlimages/curl:7.70.0
   script:
-    # Set up SSH
-    - yum -y install openssh-clients git
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "${MIRROR_KEY}")   
-    - mkdir -p ~/.ssh
-    - echo "$SSH_HOSTKEYS" > ~/.ssh/known_hosts
+    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_ORG/$GITHUB_REPO_NAME/statuses/$CI_COMMIT_SHA" --data "{\"state\":\"pending\", \"target_url\":\"$CI_JOB_URL\", \"description\":\"Running Commit\", \"context\":\"AquaGit\"}"
 
-    # Mirror the Repo
-    - if [ -e github ]; then rm -rf github; fi
-    - echo "Mirroring from ${GITHUB_REPO_URL}"
-    - git clone --bare ${GITHUB_REPO_URL} github
-    - cd github
-    - git push --mirror ${GITLAB_REPO_URL}
-    - cd ..
-    - rm -rf github
-  only: 
-    - triggers
 
 build:
-  stage: build
-  image: centos:7
+  stage: Build
+  image: alpine
   script:
-    - yum -y install curl
-    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token ${GITHUB_TOKEN}" https://api.github.com/repos/tsubashi/github-webhook-test/statuses/${CI_COMMIT_SHA} --data '{"state":"pending", "target_url":"https://git.aquaveo.com", "description":"Gitlab is processing the commit", "context":"continuous-integration/gitlab-ci"}'
     - echo "Build & Test Here!"
     - sleep 10
-    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token ${GITHUB_TOKEN}" https://api.github.com/repos/tsubashi/github-webhook-test/statuses/${CI_COMMIT_SHA} --data '{"state":"success", "target_url":"https://git.aquaveo.com", "description":"The build succeeded!", "context":"continuous-integration/gitlab-ci"}'
-  except: 
-    - trigger
+
+"Success":
+  stage: "Set Final Github Status"
+  image: curlimages/curl:7.70.0
+  script:
+    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_ORG/$GITHUB_REPO_NAME/statuses/$CI_COMMIT_SHA" --data "{\"state\":\"success\", \"target_url\":\"$CI_JOB_URL\", \"description\":\"All Green\", \"context\":\"AquaGit\"}"
+  when: on_success
+
+"Failure":
+  stage: "Set Final Github Status"
+  image: curlimages/curl:7.70.0
+  script:
+    - curl -X POST -H "Content-Type:application/json" -H "Authorization:token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_ORG/$GITHUB_REPO_NAME/statuses/$CI_COMMIT_SHA" --data "{\"state\":\"failure\", \"target_url\":\"$CI_JOB_URL\", \"description\":\"Job failed\", \"context\":\"AquaGit\"}"
+  when: on_failure
+
