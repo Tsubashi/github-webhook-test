@@ -1,0 +1,26 @@
+stages:
+  - Mirror
+
+variables:
+  GITHUB_REPO_URL: "git@github.com:tsubashi/github-webhook-test.git"
+  GITLAB_REPO_URL: "git@git.aquaveo.com:cscott/github-webhook-test.git"
+
+Mirror:
+  stage: Mirror
+  image: alpine/git:1.0.14
+  script:
+    # Set up SSH
+    - eval $(ssh-agent -s)
+    - echo "${MIRROR_KEY}" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_HOSTKEYS" > ~/.ssh/known_hosts
+
+    # Mirror the Repo
+    - if [ -e github ]; then rm -rf github; fi
+    - echo "Mirroring from ${GITHUB_REPO_URL}"
+    - git clone --bare ${GITHUB_REPO_URL} github
+    - cd github
+    - git push --mirror ${GITLAB_REPO_URL}
+    - cd ..
+    - rm -rf github
+  
