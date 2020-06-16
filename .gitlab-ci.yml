@@ -25,14 +25,14 @@ build:
     - sleep 10
 
 "Success":
-  stage: "Set Final Github Status"
+  stage: "Set Final GitHub Status"
   image: curlimages/curl:7.70.0
   script:
     - curl -X POST -H "Content-Type:application/json" -H "Authorization:token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_ORG/$GITHUB_REPO_NAME/statuses/$CI_COMMIT_SHA" --data "{\"state\":\"success\", \"target_url\":\"$CI_JOB_URL\", \"description\":\"All Green\", \"context\":\"AquaGit\"}"
   when: on_success
 
 "Failure":
-  stage: "Set Final Github Status"
+  stage: "Set Final GitHub Status"
   image: curlimages/curl:7.70.0
   script:
     - curl -X POST -H "Content-Type:application/json" -H "Authorization:token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_ORG/$GITHUB_REPO_NAME/statuses/$CI_COMMIT_SHA" --data "{\"state\":\"failure\", \"target_url\":\"$CI_JOB_URL\", \"description\":\"Job failed\", \"context\":\"AquaGit\"}"
