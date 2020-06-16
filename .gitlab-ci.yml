@@ -4,10 +4,8 @@ stages:
   
 
 variables:
-  GITHUB_ORG: "cscott"
+  GITHUB_ORG: "tsubashi"
   GITHUB_REPO_NAME: "github-webhook-test"
-  GITHUB_REPO_URL: "git@github.com:tsubashi/github-webhook-test.git"
-  GITLAB_REPO_URL: "git@git.aquaveo.com:${GITHUB_ORG}/${GITHUB_REPO_NAME}.git"
   
 
 "Set Pending Status (GitHub)":
